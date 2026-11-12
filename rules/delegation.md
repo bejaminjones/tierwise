@@ -5,13 +5,15 @@ These rules are loaded by the `tierwise` plugin. Delegate to the cheapest model 
 | Agent | Model | Effort | Use for |
 |-------|-------|--------|---------|
 | `tierwise:quick-task` | Haiku | medium | File and folder lookups, grep/search, reading documents and web pages, pulling out facts, batch lookups in one script, doc lookups, quick Q&A, status checks, trivial one-liner edits |
-| `tierwise:standard-task` | Sonnet | high | Drafting documents/emails/reports, summaries, proofreading, spreadsheets, routine data work, research with a clear question, code edits, tests, refactoring, clear-spec implementations, docs |
-| `tierwise:deep-task` | Opus | medium | Complex debugging, multi-file refactors, code review, security, perf, analysis of sources that disagree, data analysis whose figures feed a decision or get published, thorough document review — the default for heavy reasoning |
+| `tierwise:standard-task` | Sonnet | high | Drafting documents/emails/reports, summaries, proofreading, spreadsheets, routine data work, research with a clear question, code edits, tests, small refactors, clear-spec implementations, docs |
+| `tierwise:deep-task` | Opus | medium | Complex debugging, multi-file refactors, migrations, code review, security, perf, analysis of sources that disagree, data analysis whose figures feed a decision or get published, thorough document review — the default for heavy reasoning |
 | `tierwise:architect-task` | Fable | high | Architecture, strategy, hardest debugging, high-stakes tradeoffs — ceiling-level, when deep-task isn't enough |
 
 The short names below (`quick-task`, `deep-task`, …) mean these agents.
 
-**Soft defaults — use judgment.** A "simple" search needing context might warrant Sonnet; a refactor in security-sensitive code might warrant Opus. Route on actual complexity, not category. **When in doubt, go one tier up** rather than risk a bad result from a model that's too cheap.
+**Soft defaults — use judgment.** A "simple" search needing context might warrant Sonnet; a refactor in security-sensitive code might warrant Opus. Route on actual complexity, not category. A clear spec doesn't make work routine: migrations and performance work go to `deep-task` even when well specified. **When in doubt, go one tier up** rather than risk a bad result from a model that's too cheap.
+
+**Search with `quick-task`, not the built-in `Explore` agent.** `Explore` runs on the session's model, so a search sent to it bills at the main model's rate.
 
 **deep-task vs architect-task.** Use `deep-task` when work is bounded to one system or one clear question, even if deep within that scope (gnarly refactor, perf hotspot, thorough review). Use `architect-task` when many interacting constraints must be held simultaneously or reasoning crosses system boundaries — architecture, concurrency, trust boundaries.
 
@@ -23,9 +25,9 @@ The short names below (`quick-task`, `deep-task`, …) mean these agents.
 
 **Verify what comes back.** Pair any delegated implementation with a fresh-context verifier that reads the actual diff and rendered/measured output — never the implementer's summary. Verification must anchor to ground truth outside the model (tests, screenshots, bytes on disk; for documents and data, the saved file reopened, key figures recomputed, quotes checked against their source); agents agreeing with each other doesn't count — they share the same blind spots. Frame verifiers to refute, not confirm — "try to refute this finding; default to refuted if uncertain." When something can fail in more than one way, give each verifier a distinct lens (correctness, security, does-it-reproduce) rather than identical duplicates — and check the verifier can actually reach the ground truth in question: a claim about tool or runtime behavior can't be refuted by reading files.
 
-**Follow up, don't re-brief.** Spawn agents with a `name` so they stay addressable. For same-tier follow-ups ("you missed X, also check Y"), continue the existing agent via SendMessage — it already holds the context. Dispatch fresh only when the tier changes (escalation) or fresh eyes are the point (verification).
+**Follow up, don't re-brief.** Spawn agents with a `name` so they stay addressable. For same-tier follow-ups ("you missed X, also check Y"), continue the existing agent via SendMessage — it already holds the context. Dispatch fresh only when the tier or effort changes (escalation) or fresh eyes are the point (verification).
 
-**Escalate with context.** When a lower-tier agent reports the task needs escalating, re-dispatch one tier up with its partial findings attached — don't make the higher tier start cold.
+**Escalate in order, with context.** When a result falls short or an agent reports the task needs escalating, take these steps in order. First, check the agent could verify its own work (a test, a build, the saved file reopened) — a missing check looks like a weak model. Second, re-dispatch the same tier one effort level higher, up to `high` (the Agent tool's `effort`, where it has one). Third, go one tier up. Don't raise effort past `high`: a bigger model at lower effort usually costs less, and effort can't supply knowledge or skill the model lacks. Skip straight to the next tier when the gap is skill, not thoroughness. Always attach the partial findings — don't make the next attempt start cold.
 
 **Learn from routing mistakes.** One mismatch (a tier too weak for the job, or the top tier spent on something trivial) is noise. A pattern seen more than once — a tier repeatedly failing at or coasting through a task shape — belongs in memory, where the session has it (in Claude Code, an auto-memory `feedback` entry), so it shapes routing in every future session.
 

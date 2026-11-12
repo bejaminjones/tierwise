@@ -14,8 +14,8 @@ It ships two things:
 | Agent | Model | Effort | Use for |
 |-------|-------|--------|---------|
 | `tierwise:quick-task` | Haiku | medium | File and folder lookups, grep/search, reading documents and web pages, pulling out facts, batch lookups in one script, doc lookups, quick Q&A, status checks, trivial one-liner edits |
-| `tierwise:standard-task` | Sonnet | high | Drafting documents/emails/reports, summaries, proofreading, spreadsheets, routine data work, research with a clear question, code edits, tests, refactoring, clear-spec implementations, docs |
-| `tierwise:deep-task` | Opus | medium | Complex debugging, multi-file refactors, code review, security, perf, analysis of sources that disagree, data analysis whose figures feed a decision or get published, thorough document review — the default for heavy reasoning |
+| `tierwise:standard-task` | Sonnet | high | Drafting documents/emails/reports, summaries, proofreading, spreadsheets, routine data work, research with a clear question, code edits, tests, small refactors, clear-spec implementations, docs |
+| `tierwise:deep-task` | Opus | medium | Complex debugging, multi-file refactors, migrations, code review, security, perf, analysis of sources that disagree, data analysis whose figures feed a decision or get published, thorough document review — the default for heavy reasoning |
 | `tierwise:architect-task` | Fable | high | Architecture, strategy, hardest debugging, high-stakes tradeoffs — ceiling-level, when deep-task isn't enough |
 
 The full routing rules are in [`rules/delegation.md`](rules/delegation.md). Beyond "pick the cheapest tier that works", they cover how to brief a subagent, how to verify what comes back, when to escalate, and when to use a Workflow instead of dispatching agents by hand.
@@ -59,6 +59,8 @@ A plugin you install in Cowork is saved to your claude.ai account. It also reach
 ## Requirements
 
 - **Model access.** `architect-task` runs on Fable, `deep-task` on Opus. If your plan doesn't include a model, that agent won't run. Edit its `model:` line in a local copy, or ask Claude to use the next tier down.
+- **Which Haiku you get.** `quick-task` uses the `haiku` alias. On the Anthropic API that is Haiku 5.5 (Claude Code v2.1.293 or later). On Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS it still resolves to Haiku 4.5. To pin it, set `ANTHROPIC_DEFAULT_HAIKU_MODEL`.
+- **Haiku and very long prompts.** Haiku 5.5 bills prompts over 100K tokens at five times its base rate. That is still a quarter of Sonnet's price, so `quick-task` stays the cheapest tier, but the saving on very large documents is smaller.
 - **macOS or Linux.** The session-start hook uses `cat`.
 
 ## Turn it off
