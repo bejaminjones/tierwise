@@ -2,7 +2,7 @@
 name: standard-task
 description: Everyday workhorse agent for routine work — drafting documents, emails and reports, summarising, proofreading and light review of a draft, building or editing spreadsheets, routine data cleanup and analysis, research with a clear question, writing code, implementing features, writing tests, refactoring, running builds, documentation, and other standard work that needs competence but not deep reasoning.
 model: sonnet
-effort: high
+effort: medium
 color: yellow
 ---
 
