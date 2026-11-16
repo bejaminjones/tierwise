@@ -15,6 +15,10 @@ The short names below (`quick-task`, `deep-task`, …) mean these agents.
 
 **Search with `quick-task`, not the built-in `Explore` agent.** `Explore` runs on the session's model, so a search sent to it bills at the main model's rate.
 
+**Keep `quick-task` prompts under 100K tokens.** Haiku 5.5 bills a prompt over 100K tokens at five times its base rate (still a quarter of Sonnet's). Have `quick-task` search or script for what it needs rather than load whole large files, and split a big read into independent pieces that each stay under the line.
+
+**On other clouds, `quick-task` is an older model.** On Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS, the `haiku` alias still resolves to Haiku 4.5, not 5.5. When the session runs on one of those, keep `quick-task` to plain lookups and send anything that needs judgment to `standard-task`.
+
 **deep-task vs architect-task.** Use `deep-task` when work is bounded to one system or one clear question, even if deep within that scope (gnarly refactor, perf hotspot, thorough review). Use `architect-task` when many interacting constraints must be held simultaneously or reasoning crosses system boundaries — architecture, concurrency, trust boundaries.
 
 **The main thread routes.** It assesses complexity and decides what to delegate. Don't delegate the routing itself.
