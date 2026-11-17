@@ -59,6 +59,12 @@ A plugin you install in Cowork is saved to your claude.ai account. It also reach
 ## Requirements
 
 - **Model access.** `architect-task` runs on Fable, `deep-task` on Opus. If your plan doesn't include a model, that agent won't run. Edit its `model:` line in a local copy, or ask Claude to use the next tier down.
+- **Fable on Pro and similar plans.** On some plans, such as Pro, Fable bills to [usage credits](https://code.claude.com/docs/en/model-config#fable-and-usage-credits) instead of your included limits. What happens when `architect-task` runs depends on your setup:
+  - **No usage credits:** the agent fails with a model-access error. The routing rules tell Claude to hand the work to `deep-task` (Opus, high effort) instead and tell you.
+  - **Interactive session with credits:** Claude Code may ask before it spends credits on Fable.
+  - **`claude -p`, or an app that hosts Claude Code without showing the prompt:** nobody is asked, and Claude Code can bill Fable to your credits without confirming.
+
+  To keep Fable off entirely, change `model: fable` to `model: opus` in `agents/architect-task.md` in a local copy, or tell Claude at the start of a session not to use `architect-task`.
 - **Which Haiku you get.** `quick-task` uses the `haiku` alias. On the Anthropic API that is Haiku 5.5 (Claude Code v2.1.293 or later). On Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS it still resolves to Haiku 4.5. To pin it, set `ANTHROPIC_DEFAULT_HAIKU_MODEL`.
 - **Haiku and very long prompts.** Haiku 5.5 bills prompts over 100K tokens at five times its base rate. That is still a quarter of Sonnet's price, so `quick-task` stays the cheapest tier, but the saving on very large documents is smaller.
 - **macOS or Linux.** The session-start hook uses `cat`.

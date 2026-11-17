@@ -21,6 +21,8 @@ The short names below (`quick-task`, `deep-task`, …) mean these agents.
 
 **deep-task vs architect-task.** Use `deep-task` when work is bounded to one system or one clear question, even if deep within that scope (gnarly refactor, perf hotspot, thorough review). Use `architect-task` when many interacting constraints must be held simultaneously or reasoning crosses system boundaries — architecture, concurrency, trust boundaries.
 
+**If Fable isn't available, use `deep-task` at high effort.** On some plans, such as Pro, Fable bills to usage credits instead of the plan's included limits, and without credits an `architect-task` run fails with a model-access error. Claude Code doesn't fall back on its own for billing or access errors. When `architect-task` fails that way, or the user says Fable is off their plan or they don't want to spend credits on it, re-dispatch the same brief to `deep-task` with `effort: high`. Don't retry `architect-task`, and tell the user the work ran on Opus instead.
+
 **The main thread routes.** It assesses complexity and decides what to delegate. Don't delegate the routing itself.
 
 **Never delegate understanding.** A handoff prompt must prove you did the thinking — file paths, line numbers or the exact section, sheet or source, what to change and why. If you can't write that prompt, you don't understand the problem yet. Brief subagents like a colleague who just walked in: the goal, what you've already ruled out, and enough surrounding context to make judgment calls.
